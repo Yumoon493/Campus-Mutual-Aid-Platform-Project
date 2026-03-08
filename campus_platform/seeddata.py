@@ -6,7 +6,7 @@ import random
 
 
 def seed_data():
-    # 初始化 Faker
+ 
     fake = Faker()
 
     with app.app_context():
@@ -17,7 +17,7 @@ def seed_data():
 
         print("👤 正在生成 50 个用户...")
         users = []
-        # 1. 保留你的测试核心账号，方便你随时登录测试
+        
         admin = User(username='admin1', email='admin@campus.edu', password_hash=generate_password_hash('123456'),
                      role=1, balance=500)
         stu1 = User(username='alin', email='alin@campus.edu', password_hash=generate_password_hash('123456'), role=0,
@@ -26,27 +26,26 @@ def seed_data():
                     balance=100)
         users.extend([admin, stu1, stu2])
 
-        # 2. Faker 生成剩余 47 个随机用户
+        
         for _ in range(47):
-            # 🌟 设定：40% 的人是刚注册的新手（只有基础的 2 积分）
-            # 60% 的人是活跃的老用户（随机 3 到 30 积分）
+            
             initial_balance = 2 if random.random() < 0.4 else random.randint(3, 30)
 
             u = User(
                 username=fake.unique.user_name(),
                 email=fake.unique.email(),
                 password_hash=generate_password_hash('123456'),  # 统一密码方便测试
-                balance=initial_balance,  # 🌟 应用新的积分规则
+                balance=initial_balance,  
                 role=0
             )
             users.append(u)
 
         db.session.add_all(users)
-        db.session.commit()  # 先提交，拿到 user.id
+        db.session.commit()  
 
         print("📝 正在生成 100 个高质量双语校园任务...")
 
-        # 精心设计的双语校园任务模板库 (英文在前，中文在后)
+     
         task_templates = {
             'delivery': [
                 ("Pick up package at South Gate Express / 帮拿南门快递",
@@ -87,16 +86,16 @@ def seed_data():
             cat = random.choice(categories)
             template = random.choice(task_templates[cat])
 
-            # 随机挑选一个发布者 (排除管理员)
+          
             publisher = random.choice(users[1:])
 
             t = Task(
                 title=template[0],
                 description=template[1],
-                reward_points=random.randint(1, 15),  # 随机 1-15 积分
+                reward_points=random.randint(1, 15),  
                 category=cat,
                 publisher_id=publisher.id,
-                status=0  # 默认全部在大厅待接单
+                status=0  
             )
             tasks.append(t)
 
@@ -107,4 +106,5 @@ def seed_data():
 
 
 if __name__ == '__main__':
+
     seed_data()
