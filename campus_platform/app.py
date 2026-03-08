@@ -10,7 +10,6 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = 'some_secret_key_12345'
 
-# 允许跨域请求，并允许携带 Session
 CORS(app, supports_credentials=True)
 db.init_app(app)
 
@@ -64,22 +63,21 @@ def api_logout():
 
 
 # ================= 4. 获取任务大厅数据 =================
-# ================= 4. 获取任务大厅数据 =================
 @app.route('/api/tasks', methods=['GET'])
 def api_get_tasks():
-    # 按照创建时间倒序排列，最新的在最上面
     tasks = Task.query.filter_by(status=0).order_by(Task.create_time.desc()).all()
     task_list = [{
         "id": t.id,
         "title": t.title,
         "description": t.description,
         "reward_points": t.reward_points,
-        "category": t.category,  # 🌟 极其关键：必须把数据库里的分类发给前端！
+        "category": t.category,  
         "publisher_id": t.publisher_id,
         "publisher_name": User.query.get(t.publisher_id).username if User.query.get(t.publisher_id) else "未知",
         "create_time": t.create_time.strftime("%Y-%m-%d %H:%M") if t.create_time else ""
     } for t in tasks]
     return jsonify({"code": 200, "msg": "获取成功", "data": task_list})
+    
 # ================= 5. 发布任务 =================
 @app.route('/api/task/post', methods=['POST'])
 def api_post_task():
@@ -102,7 +100,6 @@ def api_post_task():
     except Exception as e:
         db.session.rollback()
         return jsonify({"code": 500, "msg": f"系统错误: {e}"})
-
 
 # ================= 6. 抢单/接单 =================
 @app.route('/api/task/claim', methods=['POST'])
@@ -200,7 +197,7 @@ def api_revoke_task():
         return jsonify({"code": 500, "msg": f"系统错误: {e}"})
 
 
-# ================= 11. 🌟 管理员强制删除 =================
+# ================= 11.  管理员强制删除 =================
 @app.route('/api/admin/delete', methods=['POST'])
 def api_admin_delete():
     user_id = session.get('user_id')
@@ -211,7 +208,6 @@ def api_admin_delete():
     if not task: return jsonify({"code": 404, "msg": "任务不存在"})
 
     try:
-        # 如果任务还没人接，把积分退还给发布者
         publisher = User.query.get(task.publisher_id)
         if publisher and task.status == 0:
             publisher.balance += task.reward_points
@@ -224,14 +220,14 @@ def api_admin_delete():
         return jsonify({"code": 500, "msg": f"系统错误: {e}"})
 
 
-# ================= 12. 🌟 获取个人主页信息 (支持查别人) =================
+# ================= 12.  获取个人主页信息 (支持查别人) =================
 @app.route('/api/profile', methods=['GET'])
 def api_profile():
     query_username = request.args.get('username')
 
-    if query_username:  # 如果传了名字，就查对应的人
+    if query_username: 
         user = User.query.filter_by(username=query_username).first()
-    else:  # 没传名字，查自己
+    else:  
         user_id = session.get('user_id')
         if not user_id: return jsonify({"code": 401, "msg": "请先登录"})
         user = User.query.get(user_id)
@@ -249,24 +245,22 @@ def api_profile():
     })
 
 
-# ================= 13. 🌟 接单者反悔放弃任务 =================
+# ================= 13.  接单者反悔放弃任务 =================
 @app.route('/api/task/abandon', methods=['POST'])
 def api_abandon_task():
     user_id = session.get('user_id')
     task_id = request.json.get('task_id')
     task = Task.query.get(task_id)
 
-    # 必须是接单人本人，且任务是进行中
     if task and task.taker_id == user_id and task.status == 1:
         try:
-            task.status = 0  # 任务重新挂回大厅
-            task.taker_id = None  # 清空接单人记录
+            task.status = 0 
+            task.taker_id = None  
 
-            # 严厉惩罚：系统留下一条 1 星差评
             sys_feedback = Feedback(
                 task_id=task.id,
-                from_user_id=task.publisher_id,  # 挂在发布者名下
-                to_user_id=user_id,  # 评价对象是放弃任务的人
+                from_user_id=task.publisher_id,  
+                to_user_id=user_id,  
                 rating=1,
                 content="⚠️ 系统提示：该用户接单后中途违约放弃了任务，请谨慎合作。"
             )
@@ -287,9 +281,8 @@ def ai_suggest_price():
     time_est = float(data.get('time_est', 1.0))
     skill = float(data.get('skill', 0.0))
     urgency = float(data.get('urgency', 0.0))
-    traffic = 0.5  # 可以根据当前大厅未完成任务数量动态计算
+    traffic = 0.5  
 
-    # 调用神经网络预测
     suggested_points = predict_points(time_est, skill, urgency, traffic)
     return jsonify({"code": 200, "suggested_points": suggested_points})
 
@@ -297,4 +290,5 @@ def ai_suggest_price():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+
     app.run(debug=True, port=5000)
