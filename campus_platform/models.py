@@ -1,10 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 
-# 创建数据库对象，先不绑定 app
 db = SQLAlchemy()
 
-# 对应数据库中的 user 表
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -15,7 +13,7 @@ class User(db.Model):
     role = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, server_default=func.now())
 
-# 对应数据库中的 task 表
+
 class Task(db.Model):
     __tablename__ = 'task'
     id = db.Column(db.Integer, primary_key=True)
@@ -28,7 +26,7 @@ class Task(db.Model):
     taker_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     create_time = db.Column(db.DateTime, server_default=func.now())
 
-# 对应数据库中的 feedback 表
+
 class Feedback(db.Model):
     __tablename__ = 'feedback'
     id = db.Column(db.Integer, primary_key=True)
@@ -37,4 +35,5 @@ class Feedback(db.Model):
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
     from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
     create_time = db.Column(db.DateTime, server_default=func.now())
