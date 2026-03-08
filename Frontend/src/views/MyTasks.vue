@@ -11,12 +11,12 @@ const router = useRouter()
 // 存储任务列表
 const publishedTasks = ref([])
 const takenTasks = ref([])
-const activeTab = ref('published') // 默认显示“我发布的”
+const activeTab = ref('published') 
 
 // 评价弹窗相关变量
 const rateDialogVisible = ref(false)
 const currentRateTask = ref(null)
-const rateScore = ref(5) // 默认 5 星
+const rateScore = ref(5) 
 const rateContent = ref('')
 
 // 获取我的任务数据
@@ -44,11 +44,11 @@ const handleRevoke = async (taskId) => {
     })
     const res = await axios.post('http://localhost:5000/api/task/revoke', { task_id: taskId })
     if (res.data.code === 200) {
-      // 🌟 【修改这里】不再用 res.data.msg，用字典里的词
+      
       ElMessage.success("🎉 " + t('msgRevokeSuccess'))
       fetchMyTasks() 
     } else {
-      ElMessage.error(res.data.msg) // 失败的报错暂时保留后端的，因为情况多变
+      ElMessage.error(res.data.msg) 
     }
   } catch (e) { /* 取消就不管 */ }
 }
@@ -63,7 +63,7 @@ const handleSettle = async (taskId) => {
     })
     const res = await axios.post('http://localhost:5000/api/task/settle', { task_id: taskId })
     if (res.data.code === 200) {
-      // 🌟 【修改这里】不再用 res.data.msg，用字典里的词
+      
       ElMessage.success("✅ " + t('msgSettleSuccess'))
       fetchMyTasks()
     } else {
@@ -111,7 +111,7 @@ onMounted(() => {
 // 5. 接单者放弃任务 (反悔机制)
 const handleAbandon = async (taskId) => {
   try {
-    // 这里故意用了 type: 'error'，让弹窗的图标变成红色的警告叉号
+    
     await ElMessageBox.confirm(t('confirmAbandon'), t('tip'), { 
       type: 'error',
       confirmButtonText: t('confirm'),
@@ -122,12 +122,12 @@ const handleAbandon = async (taskId) => {
     
     if (res.data.code === 200) {
       ElMessage.success("⚠️ " + t('msgAbandonSuccess'))
-      fetchMyTasks() // 刷新我的任务列表
+      fetchMyTasks() 
     } else {
       ElMessage.error(res.data.msg)
     }
   } catch (e) {
-    // 用户害怕了，点击取消，什么都不做
+    
   }
 }
 
@@ -237,4 +237,5 @@ const handleAbandon = async (taskId) => {
   margin: 0 0 8px 0;
   color: #333;
 }
+
 </style>
