@@ -4,10 +4,6 @@ import torch.optim as optim
 import numpy as np
 import random
 
-
-# ==========================================
-# 1. 定义深度时间价值转换网络 (DTVC-Net)
-# ==========================================
 class PricingNet(nn.Module):
     def __init__(self):
         super(PricingNet, self).__init__()
@@ -27,10 +23,6 @@ class PricingNet(nn.Module):
         return x
 
 
-# ==========================================
-# 2. 生成模拟的历史交易数据 (用于训练)
-# 假设平台之前积攒了 2000 条成交记录
-# ==========================================
 def generate_mock_data(num_samples=2000):
     X = []
     y = []
@@ -41,11 +33,6 @@ def generate_mock_data(num_samples=2000):
         urgency = random.choice([0.0, 1.0])  # 紧急：0普通, 1紧急
         traffic = random.uniform(0.0, 1.0)  # 平台拥挤度：0空闲, 1拥挤
 
-        # 模拟真实世界中，这些因素是如何影响最终成交积分的（加入一些随机噪声模拟人类行为）
-        # 基础分 = 耗时 * 1.0
-        # 技能溢价 = 耗时 * 技能 * 1.5
-        # 紧急溢价 = 耗时 * 紧急 * 0.5
-        # 拥挤溢价 = 繁忙度带来 10%~30% 的价格上涨
         base_price = time_est * 1.0
         skill_premium = time_est * skill * 1.5
         urgency_premium = time_est * urgency * 0.5
@@ -60,9 +47,7 @@ def generate_mock_data(num_samples=2000):
     return torch.tensor(X, dtype=torch.float32), torch.tensor(y, dtype=torch.float32)
 
 
-# ==========================================
-# 3. 训练神经网络模型
-# ==========================================
+
 def train_model():
     print("开始生成历史数据集...")
     X_train, y_train = generate_mock_data(3000)
@@ -85,15 +70,12 @@ def train_model():
         if (epoch + 1) % 100 == 0:
             print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
 
-    # 保存训练好的模型权重
+
     torch.save(model.state_dict(), 'dtvc_model.pth')
     print("模型训练完成，已保存为 dtvc_model.pth\n")
     return model
 
 
-# ==========================================
-# 4. 推理/预测函数 (供 Flask 后端调用)
-# ==========================================
 def predict_points(time_est, skill, urgency, traffic):
     # 加载模型
     model = PricingNet()
@@ -127,4 +109,5 @@ if __name__ == '__main__':
     print(f"案例A (帮取快递: 1小时, 无技能, 不急, 平台空闲) -> AI建议积分: {p1}")
 
     p2 = predict_points(time_est=2.0, skill=1.0, urgency=1.0, traffic=0.8)
+
     print(f"案例B (考前高数急救: 2小时, 高技能, 极急, 平台拥挤) -> AI建议积分: {p2}")
