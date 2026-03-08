@@ -57,7 +57,7 @@ const goToRegister = () => {
 .home-container {
   height: 100vh;
   display: flex;
-  flex-direction: column; /* 改为纵向排列以便放底部元素 */
+  flex-direction: column; 
   justify-content: center;
   align-items: center;
   background-color: #f0f4f8; 
@@ -70,7 +70,7 @@ const goToRegister = () => {
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  margin-bottom: 80px; /* 给底部按钮留出空间 */
+  margin-bottom: 80px; 
 }
 .logo {
   width: 150px;
@@ -91,11 +91,12 @@ const goToRegister = () => {
   gap: 20px;
   justify-content: center;
 }
-/* 底部语言按钮的样式 */
+
 .lang-bottom {
   position: absolute;
-  bottom: 50px; /* 距离底部 50px */
+  bottom: 50px; 
   display: flex;
-  gap: 30px; /* 两个按钮的间距 */
+  gap: 30px; 
 }
+
 </style>
