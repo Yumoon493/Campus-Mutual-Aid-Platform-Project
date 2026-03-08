@@ -1,5 +1,5 @@
 <script setup>
-// 🌟 修复报错：把所有需要的工具都写在这一行里，绝对不重复！
+
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { useI18n } from 'vue-i18n'
@@ -16,7 +16,7 @@ const dialogVisible = ref(false)
 const currentTask = ref({}) 
 const postDialogVisible = ref(false)
 
-// ====== 1. 融合了“分类”和“AI参数”的表单 ======
+
 const postForm = ref({ 
   title: '', 
   desc: '', 
@@ -27,11 +27,11 @@ const postForm = ref({
   points: 1             // 最终悬赏积分
 })
 
-// ====== 2. AI 动态定价专属变量 ======
+
 const suggestedPoints = ref(1) 
 const isCalculating = ref(false) 
 
-// ====== 3. 带防抖的 AI 估价请求函数 ======
+
 let timeoutId = null
 const fetchSuggestedPrice = () => {
   if (timeoutId) clearTimeout(timeoutId)
@@ -46,7 +46,7 @@ const fetchSuggestedPrice = () => {
       })
       if (res.data.code === 200) {
         suggestedPoints.value = res.data.suggested_points
-        // 如果用户当前的积分低于 AI 建议值，自动上调
+        
         if (postForm.value.points < suggestedPoints.value) {
           postForm.value.points = suggestedPoints.value
         }
@@ -59,14 +59,14 @@ const fetchSuggestedPrice = () => {
   }, 500) 
 }
 
-// 监听这三个变量，一动就呼叫 AI
+
 watch(
   () => [postForm.value.time_est, postForm.value.skill, postForm.value.urgency],
   () => { fetchSuggestedPrice() },
   { deep: true }
 )
 
-// ====== 4. 分类筛选专属逻辑 ======
+
 const activeCategory = ref('all')
 const filteredTasks = computed(() => {
   if (activeCategory.value === 'all') return taskList.value
@@ -114,7 +114,7 @@ const handlePostTask = async () => {
     ElMessage.warning("请填写完整信息")
     return 
   }
-  // 🌟 AI 底线防御
+
   if (postForm.value.points < suggestedPoints.value) {
     ElMessage.warning(`积分不可低于 AI 评估的底线：${suggestedPoints.value} 分`)
     return
@@ -282,7 +282,7 @@ onMounted(() => { fetchTasks() })
 .title { color: #333; margin: 0; }
 .header-actions { display: flex; gap: 10px; align-items: center; }
 
-/* 🌟 分类标签栏样式 */
+
 .filter-bar { display: flex; justify-content: center; margin-bottom: 30px; }
 
 .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -295,7 +295,7 @@ onMounted(() => { fetchTasks() })
 .clickable-name { color: #409EFF; cursor: pointer; transition: color 0.2s; }
 .clickable-name:hover { color: #79bbff; text-decoration: underline; }
 
-/* ====== 🤖 AI 深度学习定价面板样式 ====== */
+
 .ai-params-box {
   background-color: #fafafa;
   padding: 15px;
@@ -330,4 +330,5 @@ onMounted(() => { fetchTasks() })
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 </style>
+
 
