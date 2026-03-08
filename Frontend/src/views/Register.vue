@@ -8,12 +8,11 @@ import { ElMessage } from 'element-plus'
 const { t } = useI18n()
 const router = useRouter()
 
-// 绑定的表单数据
 const username = ref('')
 const email = ref('')
 const password = ref('')
 
-// 点击注册按钮的方法
+
 const handleRegister = async () => {
   if (!username.value || !email.value || !password.value) {
     ElMessage.warning(t('usernamePlace') + " / " + t('emailPlace'))
@@ -29,9 +28,9 @@ const handleRegister = async () => {
 
     if (response.data.code === 200) {
       ElMessage.success("🎉 " + response.data.msg)
-      router.push('/login') // 注册成功，自动跳转去登录页
+      router.push('/login') 
     } else {
-      ElMessage.error("❌ " + response.data.msg) // 比如用户名已存在
+      ElMessage.error("❌ " + response.data.msg) 
     }
   } catch (error) {
     ElMessage.error("网络请求失败！")
@@ -99,4 +98,5 @@ const goBack = () => {
   margin-left: 0; 
   margin-top: 15px;
 }
+
 </style>
