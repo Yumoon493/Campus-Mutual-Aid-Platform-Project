@@ -3,35 +3,35 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-// 引入 Element Plus 的高级弹窗组件
+
 import { ElMessage } from 'element-plus'
 
-// 召唤翻译官和路由器
+
 const { t } = useI18n()
 const router = useRouter()
 
-// 定义两个变量，用来绑定输入框里填写的账号和密码
+
 const username = ref('')
 const password = ref('')
 
-// 点击登录按钮时触发的动作
+
 const handleLogin = async () => {
-  // 1. 简单的表单校验：没填东西不准点
+
   if (!username.value || !password.value) {
-    ElMessage.warning(t('usernamePlace')) // 弹出黄色的警告提示
+    ElMessage.warning(t('usernamePlace')) 
     return
   }
 
   try {
-    // 2. 派 Axios 带着账号密码去 5000 端口敲门
+    
     const response = await axios.post('http://localhost:5000/api/login', {
       username: username.value,
       password: password.value
     })
 
-    // 3. 听听 Flask 后端怎么说
+    
     if (response.data.code === 200) {
-      // 🌟 【修改这里】不再用 response.data.msg
+      
       ElMessage.success("🎉 " + t('msgLoginSuccess')) 
 
       localStorage.setItem('user_role', response.data.data.role)
@@ -47,7 +47,7 @@ const handleLogin = async () => {
   }
 }
 
-// 返回首页的方法
+
 const goBack = () => {
   router.push('/')
 }
@@ -80,7 +80,7 @@ const goBack = () => {
 </template>
 
 <style scoped>
-/* 登录页面的背景和居中排版 */
+
 .login-container {
   height: 100vh;
   display: flex;
@@ -103,7 +103,8 @@ const goBack = () => {
   margin-top: 15px;
 }
 .back-btn {
-  margin-left: 0; /* 修正 Element Plus 默认的左边距 */
+  margin-left: 0; 
   margin-top: 15px;
 }
+
 </style>
